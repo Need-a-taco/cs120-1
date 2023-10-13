@@ -23,21 +23,25 @@ zero_id = 3
 one_id = 4
 counter_id = 5
 result_id = 6
-eleven_id = 7
+seventeen_id = 7
 temp_id = 8   # Used only in prog2
 W_id = 9       # Used only in prog2
 
-# TODO: Fill in prog1 with the first RAM program provided in the homework.
+ # TODO: Fill in prog1 with the first RAM program provided in the homework.
 prog1 = [8, 
     ['assign', zero_id, 0],
     ['assign', one_id, 1], 
-    ['assign', eleven_id, 11],
+    ['assign', seventeen_id, 17],
     ['assign', output_len_id, 1], 
     ['assign', output_ptr_id, 0],
     # TODO: lines 5-8 from pseudocode
+    ['assign', result_id, 17],
+    ['read', counter_id, zero_id],
+    ['goto', counter_id, 11],
+    ['*', result_id, result_id, result_id],
     ['-', counter_id, counter_id, one_id],
     ['goto', zero_id, 7],
-    ['*', result_id, result_id, eleven_id],
+    ['*', result_id, result_id, seventeen_id],
     ['write', output_ptr_id, result_id]
 ]
 
@@ -45,10 +49,10 @@ prog1 = [8,
 prog2 = [10, 
     ['assign', zero_id, 0],
     ['assign', one_id, 1], 
-    ['assign', eleven_id, 11], 
+    ['assign', seventeen_id, 17], 
     ['assign', output_len_id, 1], 
     ['assign', output_ptr_id, 0],
-    ['assign', result_id, 11],
+    ['assign', result_id, 17],
     ['assign', W_id, 2**32],
     ['read', counter_id, zero_id],
     ['goto', counter_id, 15],
@@ -58,6 +62,12 @@ prog2 = [10,
     ['-', result_id, result_id, temp_id],
     ['-', counter_id, counter_id, one_id],
     # TODO: lines 14-19 from pseudocode
+    ['goto', zero_id, 8],
+    ['*', result_id, result_id, seventeen_id],
+    ['/', temp_id, result_id, W_id],
+    ['*', temp_id, temp_id, W_id],
+    ['-', result_id, result_id, temp_id],
+    ['write', output_ptr_id, result_id]
 ]
 
 
@@ -66,9 +76,9 @@ prog2 = [10,
 
 # Time a function call on a given input
 def time_fun (fn, input):
-    start_time = time.time()
+    start_time = time.process_time()
     fn(input)
-    end_time = time.time()
+    end_time = time.process_time()
     return end_time - start_time
 
 def run_prog1 (n):
