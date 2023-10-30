@@ -127,11 +127,60 @@ def bfs_2_coloring(G, precolored_nodes=None):
         if len(precolored_nodes) == G.N:
             return G.colors
     
-    # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
+    # Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
     
-    G.reset_colors()
-    return None
+    # Fix an arbitrary vertex to start on. 
+
+    # BFS
+    # Initialize our visited list and frontier queue.
+    visited = set() # Frontier initialized later.
+    G.reset_colors() # Reset the colors on our graph
+
+    # Establish what colors we are using. 
+    preset_color = 2
+
+    if precolored_nodes is not None:
+        for node in precolored_nodes:
+            G.colors[node] = preset_color
+            visited.add(node)
+
+        if len(precolored_nodes) == G.N:
+            return G.colors
+        
+    colors = [0, 1]
+        
+    for vertex in range(G.N):
+        if vertex not in visited:
+            S = [vertex]
+            frontier = {vertex}
+            visited.add(vertex)
+
+            while frontier:
+                # Make new frontier to continue BFS
+                new_frontier = set()
+                for u in frontier:
+                    for new_edge in G.edges[u]:
+                        if new_edge not in visited:
+                            # Update new_edge.
+                            S.append(new_edge)
+                            new_frontier.add(new_edge)
+                            visited.add(new_edge)
+            
+                for j in S:
+                    neighbor_colors = set(G.colors[new_edge] for new_edge in G.edges[j] if G.colors[new_edge] is not None)
+
+                    new_colors = list(set(colors) - neighbor_colors)
+
+                    if not new_colors:
+                        G.reset_colors()
+                        return None
+                    
+                    G.colors[j] = min(new_colors)
+
+                frontier = new_frontier
+
+    return G.colors
 
 '''
     Part B: Implement is_independent_set.
@@ -140,8 +189,11 @@ def bfs_2_coloring(G, precolored_nodes=None):
 # Given an instance of the Graph class G and a subset of precolored nodes,
 # Checks if subset is an independent set in G 
 def is_independent_set(G, subset):
-    # TODO: Complete this function
-
+    # Complete this function
+    for node in subset:
+        for new_edge in G.edges[node]:
+            if new_edge in subset:
+                return False
     return True
 
 '''
@@ -169,9 +221,23 @@ def is_independent_set(G, subset):
 # If no coloring is possible, resets all of G's colors to None and returns None.
 def iset_bfs_3_coloring(G):
     # TODO: Complete this function.
-
+    # Recall that we must iterate through all possible sizes for our independent set. 
+    for size in range(1,G.N + 1):
+        # Generate combinations of nodes for the current size iteration in for loop.
+        for index in combinations(range(G.N), size):
+            ind_set = list(index)
+        
+        # Call our function to check if it's an independent set.
+            if is_independent_set(G, ind_set):
+                # Try a two coloring. 
+                result = bfs_2_coloring(G, ind_set)
+                if result is not None:
+                    return result
+    # This handles if there are no valid colorings found. Then, we reset the colors and return None. 
     G.reset_colors()
     return None
+
+
 
 # Feel free to add miscellaneous tests below!
 if __name__ == "__main__":

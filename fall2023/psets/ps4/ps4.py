@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import time
 import math
 import random
+import statistics
 
 random.seed(120)
 
@@ -29,15 +30,77 @@ i: an integer [0, n-1]
 returns: An key-value pair (Kj, Vj) such that Kj is an i’th smallest key.
 '''
 
-
 def QuickSelect(arr, i):
-    # Your code here
+    # Your code here    
+    if len(arr) <= 1:
+        return arr[0]
+    else:
+        # Initialize sublists
+        less_lst = []
+        greater_lst = []
+        equal_lst = []
+        
+        # Find pivot
+        p = get_random_index(arr)
+        pivot = arr[p][0]
+        
+
+        for pair in arr:
+            if pair[0] < pivot:
+                    less_lst.append(pair)
+            elif pair[0] > pivot:
+                    greater_lst.append(pair)
+            else:
+                    equal_lst.append(pair)
+        n_less = len(less_lst)
+        n_equal = len(equal_lst)
+
+        if i < n_less:
+            return QuickSelect(less_lst, i)
+        elif i >= n_less + n_equal:
+            return QuickSelect(greater_lst, i - n_less - n_equal)
+        else:
+            return equal_lst[0]
 
     # Feel free to use get_random_index(arr) or get_random_int(start_inclusive, end_inclusive)
     # ... see the helper functions below
     pass
     return (0, -1)
 
+def MedQuickSelect(arr, i):
+    if len(arr) <= 1:
+        return arr[0]
+    else:
+        p_1st = get_random_index(arr)
+        p_2nd = get_random_index(arr)
+        p_3rd = get_random_index(arr)
+        p_4th = get_random_index(arr)
+        p_5th = get_random_index(arr)
+        p_6th = get_random_index(arr)
+        p_7th = get_random_index(arr)
+        p = statistics.median([p_1st, p_2nd, p_3rd, p_4th, p_5th, p_6th, p_7th])
+        pivot = arr[p][0]
+
+        less_lst = []
+        greater_lst = []
+        equal_lst = []
+
+        for pair in arr:
+            if pair[0] < pivot:
+                    less_lst.append(pair)
+            elif pair[0] > pivot:
+                    greater_lst.append(pair)
+            else:
+                    equal_lst.append(pair)
+        n_less = len(less_lst)
+        n_equal = len(equal_lst)
+
+        if i < n_less:
+            return QuickSelect(less_lst, i)
+        elif i >= n_less + n_equal:
+            return QuickSelect(greater_lst, i - n_less - n_equal)
+        else:
+            return equal_lst[0]
 
 '''
 Uses MergeSort to resolve a number of queries where each query is to find an key-value pair (Kj, Vj) such that Kj is an i’th smallest key.
@@ -54,9 +117,14 @@ NOTE: This is different from the QuickSelect definition. This function takes in 
 def MergeSortSelect(arr, query_list):
     # Only call MergeSort once
     # ... MergeSort has already been implemented for you (see below)
-    pass
-    return [(0, -1)] * len(query_list)  # replace this line with your return
+    lst = []
+    arr = MergeSort(arr)
 
+    for query in query_list:
+        new_elt = arr[query]
+        lst.append(new_elt)
+    
+    return lst
 
 ##################################
 #                                #
@@ -67,7 +135,7 @@ def MergeSortSelect(arr, query_list):
 
 def experiments():
     # Edit this parameter
-    k = [1, 1, 1, 1, 1]
+    k = [34, 38, 42, 46, 50]
 
     # Feel free to edit these initial parameters
 
@@ -125,6 +193,19 @@ def experiments():
                 k_record.append(ki)
                 ms_record.append(seconds * 1000)  # Convert seconds to milliseconds
                 algorithm_record.append("MergeSort")
+
+            for _ in range(RUNS):
+                # Record Time Taken to Solve All Queries
+                start_time = time.time()
+                for q in queries:
+                    # Copy dataset just to be safe
+                    MedQuickSelect(dataset_size_n.copy(), q)
+                seconds = time.time() - start_time
+                # Record this trial run
+                n_record.append(ni)
+                k_record.append(ki)
+                ms_record.append(seconds * 1000)  # Convert seconds to milliseconds
+                algorithm_record.append("MedQuickSelect")
 
             # Print progress
             iter += 1
